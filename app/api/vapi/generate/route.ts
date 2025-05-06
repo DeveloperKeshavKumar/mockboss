@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             type: type,
             level: level,
             techstack: techstack.split(','),
-            questions: JSON.parse(questions),
+            questions: JSON.stringify(questions),
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         return Response.json({ success: true }, { status: 200 })
     } catch (error) {
         console.error('Error:', error)
-        return Response.json({ success: false, error: error }, { status: 500 })
+        return Response.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }
 
