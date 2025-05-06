@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { vapi } from '@/lib/vapi.sdk'
 import { interviewer } from '@/constants'
-import { createFeedback } from '@/lib/actions/general.action'
+import { createFeedback, updateFeedback } from '@/lib/actions/general.action'
 
 enum CallStatus {
     INACTIVE = 'INACTIVE',
@@ -90,12 +90,26 @@ const Agent = ({
         const handleGenerateFeedback = async (messages: SavedMessage[]) => {
             console.log('handleGenerateFeedback')
 
-            const { success, feedbackId: id } = await createFeedback({
-                interviewId: interviewId!,
-                userId: userId!,
-                transcript: messages,
-                feedbackId,
-            })
+            let success = false
+            let id = feedbackId
+
+            if (feedbackId) {
+                const updateResult = await updateFeedback({
+                    feedbackId,
+                    transcript: messages
+                })
+                success = updateResult.success
+            } else {
+                const createResult = await createFeedback({
+                    interviewId: interviewId!,
+                    userId: userId!,
+                    transcript: messages,
+                    feedbackId,
+                })
+
+                success = createResult.success
+                id = createResult.feedbackId
+            }
 
             if (success && id) {
                 router.push(`/interview/${interviewId}/feedback`)
@@ -206,7 +220,7 @@ const Agent = ({
 
                         <span className='relative'>
                             {callStatus === 'INACTIVE' || callStatus === 'FINISHED'
-                                ? 'Call'
+                                ? feedbackId ? 'Retake' : 'Start'
                                 : '. . .'}
                         </span>
                     </button>

@@ -25,11 +25,25 @@ interface Interview {
   finalized: boolean;
 }
 
+interface InterviewGeneratorFormData {
+  type: string;
+  role: string;
+  level: string;
+  techstack: string;
+  amount: number;
+  userid: string;
+}
+
 interface CreateFeedbackParams {
   interviewId: string;
   userId: string;
   transcript: { role: string; content: string }[];
   feedbackId?: string;
+}
+
+interface UpdateFeedbackParams {
+  feedbackId: string;
+  transcript: { role: string; content: string }[];
 }
 
 interface User {
